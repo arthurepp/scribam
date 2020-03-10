@@ -1,0 +1,45 @@
+version: '3'
+services:    
+  mongodb_scribam:
+    container_name: mongodb_scribam
+    image: mongo
+    ports:
+      - 27017:27017
+  rabbitmq_scribam:
+    container_name: rabbitmq_scribam
+    image: "rabbitmq:3-management"
+    hostname: "rabbitmq_scribam"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    labels:
+      NAME: "rabbitmq_scribam"   
+  app:
+    container_name: app
+    build: ./app    
+    ports:
+      - "5000:5000"
+    depends_on:
+      - rabbitmq_scribam
+    env_file:
+      - ./scribam.env
+  api:
+    container_name: api
+    build: ./api    
+    ports:
+      - "8001:8001"
+    depends_on:
+      - mongodb_scribam
+      - rabbitmq_scribam
+    env_file:
+      - ./scribam.env
+  worker:
+    container_name: worker
+    build: ./worker
+    ports:
+    - "8002:8002"
+    depends_on:
+    - mongodb_scribam
+    - rabbitmq_scribam
+    env_file:
+      - ./scribam.env

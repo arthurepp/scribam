@@ -12,10 +12,11 @@ import (
 )
 
 type MessageLog struct {
-	Source   string `form:"source" json:"source" binding:"required"`
-	Message  string `form:"message" json:"message" binding:"required"`
-	DateTime string `form:"dateTime" json:"datetime"`
-	Type     string `form:"type" json:"type" binding:"required"`
+	Application string `form:"application" json:"application" binding:"required"`
+	User        string `form:"user" json:"user" binding:"required"`
+	Data        string `form:"data" json:"data" binding:"required"`
+	DateTime    string `form:"dateTime" json:"datetime"`
+	TrackID     string `form:"trackID" json:"trackID"`
 }
 
 func main() {
@@ -25,7 +26,7 @@ func main() {
 	goutil.FailOnError(err, "Failed to create connection to queue")
 
 	fmt.Println("get consumer queue")
-	msgs, err := goutil.GetConsummer(ch, "log_message")
+	msgs, err := goutil.GetConsummer(ch, os.Getenv("SCRIBAM_QUEUE_NAME"))
 	goutil.FailOnError(err, "Failed to create connection to queue")
 
 	forever := make(chan bool)
@@ -38,15 +39,15 @@ func main() {
 			err := json.Unmarshal(d.Body, &messageLog)
 			goutil.FailOnError(err, "Failed to deserialize queue message")
 
-			//valida mensagem de alguma forma
+			//TODO validate menssage
 
-			session, err := mgo.Dial("mongodb_scribam")
+			session, err := mgo.Dial(os.Getenv("SCRIBAM_DB_HOST"))
 			if err != nil {
 				goutil.FailOnError(err, "Failed to connect to database")
 			}
 			defer session.Close()
 			messageLog.DateTime = time.Now().String()
-			c := session.DB("scribamlog").C("log")
+			c := session.DB(os.Getenv("SCRIBAM_DB_HOST")).C("log")
 			err = c.Insert(messageLog)
 			if err != nil {
 				goutil.FailOnError(err, "Failed to insert message in database")

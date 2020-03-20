@@ -5,10 +5,11 @@ import (
 )
 
 type MessageLog struct {
-	Source   string `form:"source" json:"source" binding:"required"`
-	Message  string `form:"message" json:"message" binding:"required"`
-	DateTime string `form:"dateTime" json:"datetime"`
-	Type     string `form:"type" json:"type" binding:"required"`
+	Application string `form:"application" json:"application" binding:"required"`
+	User        string `form:"user" json:"user" binding:"required"`
+	Data        string `form:"data" json:"data" binding:"required"`
+	DateTime    string `form:"dateTime" json:"datetime"`
+	TrackID     string `form:"trackID" json:"trackID"`
 }
 
 func main() {

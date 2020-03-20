@@ -11,11 +11,11 @@ def create_message():
     pika.URLParameters(os.environ['SCRIBAM_QUEUE']))
 	channel = connection.channel()
 
-	channel.queue_declare(queue='log_message', durable=True)
+	channel.queue_declare(queue=os.environ['SCRIBAM_QUEUE_NAME'], durable=True)
 	
-	message = json.dumps({'source': 'flask','message': 'test with flask 2','dateTime': '2020-03-10','type':'info'})
+	message = json.dumps({'application': 'flask','user':'arthur','data': 'test with flask 2','dateTime': '2020-03-10','trackID':'123'})
 
-	channel.basic_publish(exchange='', routing_key='log_message', body=message)
+	channel.basic_publish(exchange='', routing_key=os.environ['SCRIBAM_QUEUE_NAME'], body=message)
 	print(" [x] Sent Message")
 	connection.close()
 	return 'Ok'

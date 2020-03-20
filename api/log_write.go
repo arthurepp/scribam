@@ -20,7 +20,7 @@ func CreateLog(c *gin.Context) {
 		goutil.FailOnError(err, "Failed to create connection to queue")
 
 		fmt.Println("Put message on queue")
-		err = goutil.Publish(ch, "log_message", b)
+		err = goutil.Publish(ch, os.Getenv("SCRIBAM_QUEUE_NAME"), b)
 		goutil.FailOnError(err, "Failed to put message on queue log_message")
 	}
 	c.Data(201, gin.MIMEHTML, nil)
